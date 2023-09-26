@@ -26,6 +26,28 @@ function ListAssignment(props) {
   
   
     const headers = ['Assignment Name', 'Course Title', 'Due Date', ' ', ' ', ' '];
+    const deleteAssignment = (assignmentId) => {
+      setMessage('');
+    
+      fetch(`${SERVER_URL}/assignment/${assignmentId}`, {
+        method: 'DELETE',
+      })
+        .then((res) => {
+          if (res.ok) {
+            // Assignment deleted successfully, you can perform any necessary actions here
+            setMessage('Assignment deleted.');
+            // You might want to fetch the updated list of assignments after deletion
+            fetchAssignments();
+          } else {
+            setMessage('Delete error. ' + res.status);
+            console.error('Delete assignment error: ' + res.status);
+          }
+        })
+        .catch((err) => {
+          setMessage('Exception. ' + err);
+          console.error('Delete assignment exception: ' + err);
+        });
+    };
     
     return (
       <div>
@@ -47,12 +69,19 @@ function ListAssignment(props) {
                       <td>
                         <Link to={`/gradeAssignment/${assignments[idx].id}`} >Grade</Link>
                       </td>
-                      <td>Edit</td>
-                      <td>Delete</td>
+                      <td>
+                      <Link to={`/updateAssignment/${assignments[idx].id}`} >Edit</Link>
+                      </td>
+                      <td>
+                      <button id="dAssignment" type="button" margin="auto" onClick={() => deleteAssignment(assignments[idx].id)}>Delete</button>
+
+                       {/* <Link to={`/deleteAssignment/${assignments[idx].id}`} >Delete</Link> */}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
+              <Link to={`/createAssignment`} >Create New Assignment</Link>
           </div>
       </div>
     )
