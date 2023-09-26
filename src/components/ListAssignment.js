@@ -34,13 +34,28 @@ function ListAssignment(props) {
       })
         .then((res) => {
           if (res.ok) {
-            // Assignment deleted successfully, you can perform any necessary actions here
             setMessage('Assignment deleted.');
-            // You might want to fetch the updated list of assignments after deletion
             fetchAssignments();
           } else {
-            setMessage('Delete error. ' + res.status);
-            console.error('Delete assignment error: ' + res.status);
+            //setMessage();
+            res.json().then((data) =>{
+              if(window.confirm('Delete error.Assignment has grades , delete anyways?' )){
+                fetch(`${SERVER_URL}/assignment/${assignmentId}?force=yes`, {
+                  method: 'DELETE',
+                })
+                  .then((res) => {
+                    if (res.ok) {
+                      setMessage('Assignment deleted.');
+                      fetchAssignments();
+                    } else {}
+              })
+                    .catch((err) => {
+                      setMessage('Exception. ' + err);
+                      console.error('Delete assignment exception: ' + err);
+                    });
+              }
+            });
+            
           }
         })
         .catch((err) => {
