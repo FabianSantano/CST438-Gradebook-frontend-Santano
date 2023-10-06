@@ -26,6 +26,43 @@ function ListAssignment(props) {
   
   
     const headers = ['Assignment Name', 'Course Title', 'Due Date', ' ', ' ', ' '];
+    const deleteAssignment = (assignmentId) => {
+      setMessage('');
+    
+      fetch(`${SERVER_URL}/assignment/${assignmentId}`, {
+        method: 'DELETE',
+      })
+        .then((res) => {
+          if (res.ok) {
+            setMessage('Assignment deleted.');
+            fetchAssignments();
+          } else {
+            //setMessage();
+            res.json().then((data) =>{
+              if(window.confirm('Delete error.Assignment has grades , delete anyways?' )){
+                fetch(`${SERVER_URL}/assignment/${assignmentId}?force=yes`, {
+                  method: 'DELETE',
+                })
+                  .then((res) => {
+                    if (res.ok) {
+                      setMessage('Assignment deleted.');
+                      fetchAssignments();
+                    } else {}
+              })
+                    .catch((err) => {
+                      setMessage('Exception. ' + err);
+                      console.error('Delete assignment exception: ' + err);
+                    });
+              }
+            });
+            
+          }
+        })
+        .catch((err) => {
+          setMessage('Exception. ' + err);
+          console.error('Delete assignment exception: ' + err);
+        });
+    };
     
     return (
       <div>
@@ -47,12 +84,19 @@ function ListAssignment(props) {
                       <td>
                         <Link to={`/gradeAssignment/${assignments[idx].id}`} >Grade</Link>
                       </td>
-                      <td>Edit</td>
-                      <td>Delete</td>
+                      <td>
+                      <Link to={`/updateAssignment/${assignments[idx].id}`} >Edit</Link>
+                      </td>
+                      <td>
+                      <button id="dAssignment" type="button" margin="auto" onClick={() => deleteAssignment(assignments[idx].id)}>Delete</button>
+
+                       {/* <Link to={`/deleteAssignment/${assignments[idx].id}`} >Delete</Link> */}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
+              <Link to={`/createAssignment`} >Create New Assignment</Link>
           </div>
       </div>
     )
