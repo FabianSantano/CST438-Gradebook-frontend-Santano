@@ -68,7 +68,7 @@ function ListAssignment(props) {
       <div>
         <h3>Assignments</h3>
         <div margin="auto" >
-          <h4>{message}&nbsp;</h4>
+          <h4 id = "message">{message}&nbsp;</h4>
               <table className="Center"> 
                 <thead>
                   <tr>
@@ -88,8 +88,8 @@ function ListAssignment(props) {
                       <Link to={`/updateAssignment/${assignments[idx].id}`} >Edit</Link>
                       </td>
                       <td>
-                      <button id="dAssignment" type="button" margin="auto" onClick={() => deleteAssignment(assignments[idx].id)}>Delete</button>
-
+                      <button id ={`dAssignment${assignments[idx].id}`} type="button" margin="auto" onClick={() => deleteAssignment(assignments[idx].id)}>Delete</button>
+                      
                        {/* <Link to={`/deleteAssignment/${assignments[idx].id}`} >Delete</Link> */}
                       </td>
                     </tr>
