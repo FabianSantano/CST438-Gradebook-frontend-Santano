@@ -1,3 +1,4 @@
+
 import React, {useState, useEffect} from 'react';
 import {SERVER_URL} from '../constants';
 import {Link} from 'react-router-dom';
@@ -7,15 +8,17 @@ function ListAssignment(props) {
 
   const [assignments, setAssignments] = useState([]);
   const [message, setMessage] = useState('');
-
+  const token = sessionStorage.getItem("jwt");
   useEffect(() => {
    // called once after intial render
    fetchAssignments();
   }, [] )
- 
+
   const fetchAssignments = () => {
     console.log("fetchAssignments");
-    fetch(`${SERVER_URL}/assignment`)
+    fetch(`${SERVER_URL}/assignment`, {
+      headers: { "Authorization": token }
+    })
     .then((response) => response.json() ) 
     .then((data) => { 
       console.log("assignment length "+data.length);
@@ -31,6 +34,8 @@ function ListAssignment(props) {
     
       fetch(`${SERVER_URL}/assignment/${assignmentId}`, {
         method: 'DELETE',
+        headers: { "Authorization": token }
+        
       })
         .then((res) => {
           if (res.ok) {
@@ -42,6 +47,7 @@ function ListAssignment(props) {
               if(window.confirm('Delete error.Assignment has grades , delete anyways?' )){
                 fetch(`${SERVER_URL}/assignment/${assignmentId}?force=yes`, {
                   method: 'DELETE',
+                  headers: { "Authorization": token }
                 })
                   .then((res) => {
                     if (res.ok) {
