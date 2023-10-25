@@ -1,6 +1,6 @@
 import React, { useState ,useEffect} from 'react';
 import {SERVER_URL} from '../constants';
-import {Link} from 'react-router-dom';
+//import {Link} from 'react-router-dom';
 
 
 function AddAssignment(props) { 
@@ -11,9 +11,9 @@ function AddAssignment(props) {
     assignmentName: ''
   });
   const [message, setMessage] = useState('');
-  // const path = window.location.pathname;  // /gradebook/123
-  // const s = /\d+$/.exec(path)[0];
-  // console.log("Grade assignmentId="+s);
+  const token = sessionStorage.getItem("jwt");
+  //const path = window.location.pathname;  // /gradebook/123
+ 
  
   useEffect(() => {
     // called once after intial render
@@ -21,7 +21,10 @@ function AddAssignment(props) {
    }, [] )
    const fetchAssignments = () => {
     console.log("fetchAssignments");
-    fetch(`${SERVER_URL}/assignment`)
+    fetch(`${SERVER_URL}/assignment`,
+    {
+      headers: { "Authorization": token }
+    })
     .then((response) => response.json() ) 
     .then((data) => { 
       console.log("assignment length "+data.length);
@@ -32,10 +35,7 @@ function AddAssignment(props) {
   const onChangeInput = (e) => {
     setMessage('');
     const { name, value } = e.target;
-  
-    // Create a copy of the assignment object
     const updatedAssignment = { ...assignment };
-  
     // Update the corresponding property based on the input name
     if (name === 'course') {
       // Parse the value as an integer
@@ -43,30 +43,24 @@ function AddAssignment(props) {
     } else {
       updatedAssignment[name] = value;
     }
-  
-    // Update the state with the modified assignment object
     setAssignments(updatedAssignment);
   };
  
   const saveGrades = () => {
     setMessage('');
-  
-    // Create a copy of the assignment object
+
     const newAssignment = { ...assignment };
-  
-    // Ensure that courseId is sent as an integer (if it's not empty)
     if (newAssignment.course !== '') {
       newAssignment.course = parseInt(newAssignment.course, 10);
     }
   
     fetch(`${SERVER_URL}/assignment`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Authorization": token , 'Content-Type': 'application/json' },
       body: JSON.stringify(newAssignment),
     })
       .then((res) => {
         if (res.ok) {
-          // You can perform any necessary actions after a successful save here
           setMessage('Assignment saved.');
         } else {
           setMessage('Save error. ' + res.status);
@@ -88,7 +82,7 @@ function AddAssignment(props) {
       <div>
        <h3>Create Assignment</h3>
         <div margin="auto">
-          <h4 id="gmessage">{message}&nbsp;</h4>
+          <h4 id= "gmessage">{message}&nbsp;</h4>
           <table className="Center">
             <thead>
               <tr>
@@ -115,7 +109,7 @@ function AddAssignment(props) {
                     onChange={(e) => onChangeInput(e)}
                   />
                 </td>
-                <td>
+                <td >
                   <input
                     name="assignmentName"
                     value={assignment.assignmentName || ""}

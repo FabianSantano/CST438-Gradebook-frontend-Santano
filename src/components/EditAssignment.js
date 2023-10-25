@@ -6,7 +6,7 @@ function EditAssignment(props) {
   const [assignment, setAssignments] = useState({});
   let assignmentId=0;
   const [message, setMessage] = useState('');
-  
+  const token = sessionStorage.getItem("jwt");
   const path = window.location.pathname;  // /gradebook/123
   const s = /\d+$/.exec(path)[0];
   console.log("Grade assignmentId="+s);
@@ -20,7 +20,9 @@ function EditAssignment(props) {
   const fetchAssignment = ( ) => {
       setMessage('');
     
-      fetch(`${SERVER_URL}/assignment/${assignmentId}`)
+      fetch(`${SERVER_URL}/assignment/${assignmentId}`,{
+        headers: { "Authorization": token }
+      })
       .then((response) => response.json()) 
       .then((data) => { setAssignments(data) })        
       .catch(err => { 
@@ -36,7 +38,8 @@ function EditAssignment(props) {
       fetch(`${SERVER_URL}/assignment/${assignmentId}` , 
           {  
             method: 'PUT', 
-            headers: { 'Content-Type': 'application/json', }, 
+            headers: { 'Content-Type': 'application/json' ,
+            "Authorization": token },
             body: JSON.stringify( assignment )
           } )
       .then(res => {
@@ -56,13 +59,10 @@ function EditAssignment(props) {
    const onChangeInput = (e) => {
     setMessage('');
     const { name, value } = e.target;
-  
     // Create a copy of the assignment object
     const updatedAssignment = { ...assignment };
-  
     // Update the corresponding property based on the input name
     updatedAssignment[name] = value;
-  
     // Update the state with the modified assignment object
     setAssignments(updatedAssignment);
   }
